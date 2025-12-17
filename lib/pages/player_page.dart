@@ -206,66 +206,76 @@ class _PlayerPageState extends State<PlayerPage> {
                         ),
                         const SizedBox(height: 10),
                         Expanded(
-                          child: ListView.builder(
-                            itemCount: buzzer.buzzers.length,
-                            itemBuilder: (context, index) {
-                              final b = buzzer.buzzers[index];
-                              final time = b['buzzed_at'] != null
-                                  ? DateTime.parse(b['buzzed_at'])
-                                  : null;
+                          child: () {
+                            final sortedBuzzers = List.from(buzzer.buzzers)
+                              ..sort((a, b) {
+                                final aTime = DateTime.parse(a['buzzed_at']);
+                                final bTime = DateTime.parse(b['buzzed_at']);
+                                return aTime.compareTo(
+                                  bTime,
+                                ); // Sort ascending (earliest first)
+                              });
+                            return ListView.builder(
+                              itemCount: sortedBuzzers.length,
+                              itemBuilder: (context, index) {
+                                final b = sortedBuzzers[index];
+                                final time = b['buzzed_at'] != null
+                                    ? DateTime.parse(b['buzzed_at'])
+                                    : null;
 
-                              return Container(
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 6,
-                                ),
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.redAccent),
-                                  color: Colors.black,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      '#${index + 1}',
-                                      style: retroText.copyWith(
-                                        fontSize: 10,
-                                        color: Colors.red,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    Expanded(
-                                      child: Text(
-                                        b['name'] ?? 'UNKNOWN',
+                                return Container(
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 6,
+                                  ),
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.redAccent),
+                                    color: Colors.black,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        '#${index + 1}',
                                         style: retroText.copyWith(
                                           fontSize: 10,
-                                          color: Colors.white,
+                                          color: Colors.red,
                                         ),
                                       ),
-                                    ),
-                                    Text(
-                                      time != null
-                                          ? '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}:${time.second.toString().padLeft(2, '0')}'
-                                          : '--',
-                                      style: retroText.copyWith(
-                                        fontSize: 8,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                    if (b['name'] == player.username)
-                                      const Padding(
-                                        padding: EdgeInsets.only(left: 8),
-                                        child: Icon(
-                                          Icons.star,
-                                          color: Colors.amber,
-                                          size: 14,
+                                      const SizedBox(width: 16),
+                                      Expanded(
+                                        child: Text(
+                                          b['name'] ?? 'UNKNOWN',
+                                          style: retroText.copyWith(
+                                            fontSize: 10,
+                                            color: Colors.white,
+                                          ),
                                         ),
                                       ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
+                                      Text(
+                                        time != null
+                                            ? '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}:${time.second.toString().padLeft(2, '0')}'
+                                            : '--',
+                                        style: retroText.copyWith(
+                                          fontSize: 8,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                      if (b['name'] == player.username)
+                                        const Padding(
+                                          padding: EdgeInsets.only(left: 8),
+                                          child: Icon(
+                                            Icons.star,
+                                            color: Colors.amber,
+                                            size: 14,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                          }(),
                         ),
                       ],
                     ],
